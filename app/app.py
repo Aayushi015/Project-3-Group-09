@@ -1,19 +1,22 @@
 from flask import Flask
-import sqlite3
+from database import db, bind_database
 
 #Routes
-from o3.routes import o3_bp
-from so2.routes import so2_bp
-from no2.routes import no2_bp
-from co.routes import co_bp
+from routes.pollutant import pollutant_bp
+from routes.states import states_bp
+from routes.counties import counties_bp
+from routes.cities import cities_bp
+
 
 app = Flask(__name__)
+bind_database(app)
 
 #Register Routes
-app.register_blueprint(o3_bp, url_prefix='/o3')
-app.register_blueprint(so2_bp, url_prefix='/so2')
-app.register_blueprint(no2_bp, url_prefix='/no2')
-app.register_blueprint(co_bp, url_prefix='/co')
+app.register_blueprint(pollutant_bp, url_prefix='/api')
+app.register_blueprint(states_bp, url_prefix='/api')
+app.register_blueprint(counties_bp, url_prefix='/api')
+app.register_blueprint(cities_bp, url_prefix='/api')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
