@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from database import db, bind_database
 
 #Routes
@@ -9,6 +10,8 @@ from routes.cities import cities_bp
 
 
 app = Flask(__name__)
+CORS(app, origins=['http://localhost:5173'])
+
 bind_database(app)
 
 #Register Routes
