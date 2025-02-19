@@ -1,8 +1,8 @@
 # Project-3-Group-09
 
-U.S. Pollution Data Analysis (2013–2023)
+U.S. Pollution Data Analysis (2000–2023)
 Overview
-This project analyzes air quality trends across all U.S. states using the U.S. Pollution Data 2013–2023 dataset. The dataset includes Air Quality Index (AQI) values and key pollutants such as:
+This project analyzes air quality trends across all U.S. states using the U.S. Pollution Data 2000–2023 dataset. The dataset includes Air Quality Index (AQI) values and key pollutants such as:
 
 Nitrogen Dioxide (NO₂)
 Sulphur Dioxide (SO₂)
@@ -39,7 +39,7 @@ pip install
 -numpy
 -matplotlib
 -seaborn
- -plotly
+-plotly
 
 Usage
 Load the dataset and preprocess the data.
