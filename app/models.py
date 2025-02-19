@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import Integer, Float, String, ForeignKey, Column
+from sqlalchemy import Integer, Float, String, ForeignKey, Column, func
 from sqlalchemy.orm import relationship
 from enum import Enum
 from database import db
@@ -208,7 +208,38 @@ class Pollutant(db.Model):
                 case PollutantType.NO2: 
                     query = query.filter(self.no2_first_max_hour == search_params.max_hour)
 
-        return query.all()        
+        return query.all()     
+
+    @classmethod
+    def get_top_cleanest_cities(self, pollutant_type: PollutantType):
+        query = (
+            db.session.query(
+                Location.city,
+                func.avg(self.o3_aqi)
+            )
+            .join(self, self.location_id == Location.id)
+            .group_by(Location.city)
+            .order_by(func.avg(self.o3_aqi).asc())
+            .limit(10)
+        )
+
+        return query.all()
+    
+    @classmethod
+    def get_top_dirtiest_cities(self, pollutant_type: PollutantType):
+        query = (
+            db.session.query(
+                Location.city,
+                func.avg(self.o3_aqi)
+            )
+            .join(self, self.location_id == Location.id)
+            .group_by(Location.city)
+            .order_by(func.avg(self.o3_aqi).desc())
+            .limit(10)
+        )
+
+        return query.all()
+
 
     def to_dict(self):
         data = {col.name: getattr(self, col.name) for col in self.__table__.columns}

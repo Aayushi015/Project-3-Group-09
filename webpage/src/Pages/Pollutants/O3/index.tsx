@@ -55,11 +55,13 @@ const O3 = (Props: PollutantProps) => {
 
   useEffect(() => {
     let client = new HttpClient();
+
     let search: SearchParams = {
       year: selectedYear,
       month: selectedMonth,
       state: selectedState,
     };
+
     client.get_pollutants_info(search, PollutantType.O3).then((data) => {
       let heatdata: [number, number, number][] = [];
       console.log(data);
@@ -67,7 +69,7 @@ const O3 = (Props: PollutantProps) => {
         let point: [number, number, number] = [
           p.location.latitude,
           p.location.longitude,
-          p.aqi / 300,
+          p.aqi,
         ];
 
         heatdata.push(point);

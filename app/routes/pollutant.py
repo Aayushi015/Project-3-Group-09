@@ -56,4 +56,63 @@ def get_pollutans(pollutant_type):
             "day": pollutant.day
         }
         for pollutant in pollutants
-    ])   
+    ])
+
+@pollutant_bp.route('/pollutant/<string:pollutant_type>/top_cleanest_cities')
+def get_top_cleanest_cities(pollutant_type):
+
+    match pollutant_type:
+        case 'o3':
+            pollutant_type = PollutantType.O3
+        
+        case 'so2':
+            pollutant_type = PollutantType.SO2
+        
+        case 'co':
+            pollutant_type = PollutantType.CO
+
+        case 'no2':
+            pollutant_type = PollutantType.NO2
+
+        case _:
+            return jsonify({"error": "That pollutant is not supported in this API"}), 400
+
+
+    pollutants: List[Pollutant] = Pollutant.get_top_cleanest_cities(pollutant_type)
+
+    return jsonify([
+        {
+            "city": pollutant[0],
+            "avg_aqi": pollutant[1],
+        }
+        for pollutant in pollutants
+    ]) 
+
+@pollutant_bp.route('/pollutant/<string:pollutant_type>/top_dirtiest_cities')
+def get_top_dirtiest_cities(pollutant_type):
+
+    match pollutant_type:
+        case 'o3':
+            pollutant_type = PollutantType.O3
+        
+        case 'so2':
+            pollutant_type = PollutantType.SO2
+        
+        case 'co':
+            pollutant_type = PollutantType.CO
+
+        case 'no2':
+            pollutant_type = PollutantType.NO2
+
+        case _:
+            return jsonify({"error": "That pollutant is not supported in this API"}), 400
+
+    pollutants: List[Pollutant] = Pollutant.get_top_dirtiest_cities(pollutant_type)
+
+    return jsonify([
+        {
+            "city": pollutant[0],
+            "avg_aqi": pollutant[1],
+        }
+        for pollutant in pollutants
+    ]) 
