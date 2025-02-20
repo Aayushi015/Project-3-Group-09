@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Pollutants, Home, About } from "./Pages";
 import { Route, Routes } from "react-router-dom";
 import SlideMenu from "./Components/SlideMenu";

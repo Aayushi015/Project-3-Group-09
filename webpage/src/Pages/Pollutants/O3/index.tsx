@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
 import Heatmap from "../../../Components/HeatMap";
+import LineChart from "../../../Components/LineChart";
+import BarChart from "../../../Components/BarChart";
+
 import { PollutantProps } from "../index";
 import {
   HttpClient,
   SearchParams,
   PollutantType,
-  PollutantInfo,
 } from "../../../services/HttpClient";
 
 const O3 = (Props: PollutantProps) => {
-  let [pollutantHeatData, setPollutantHeatData] = useState<
-    [number, number, number][]
-  >([]);
+  let [pollutantHeatData, setPollutantHeatData] = useState<[number, number, number][]>([]);
+  let [aqiData,setAqiData] = useState<any>([]);
+  let [cleanestCities,setCleanestCities] = useState<any>(null);
+  let [dirtiestCities,setDirtiestCities] = useState<any>(null);
+
 
   const [selectedYear, setSelectedYear] = useState<number>(2000);
   const [selectedMonth, setSelectedMonth] = useState<number>(0);
@@ -64,7 +68,9 @@ const O3 = (Props: PollutantProps) => {
 
     client.get_pollutants_info(search, PollutantType.O3).then((data) => {
       let heatdata: [number, number, number][] = [];
-      console.log(data);
+
+      console.log(data)
+
       data.map((p) => {
         let point: [number, number, number] = [
           p.location.latitude,
@@ -78,6 +84,22 @@ const O3 = (Props: PollutantProps) => {
       setPollutantHeatData(heatdata);
     });
   }, [selectedYear, selectedMonth, selectedState]);
+
+  useEffect(() => {
+    let client = new HttpClient();
+
+    client.get_pollutant_timeline(PollutantType.O3).then((data) => {
+      setAqiData(data)
+    });
+
+    client.get_pollutant_cleanest_cities(PollutantType.O3).then((data) => {
+      setCleanestCities(data)
+    });
+
+    client.get_pollutant_dirtiest_cities(PollutantType.O3).then((data) => {
+      setDirtiestCities(data)
+    });
+  }, []);
 
   return (
     <>
@@ -215,6 +237,9 @@ const O3 = (Props: PollutantProps) => {
           </select>
         </div>
         <Heatmap points={pollutantHeatData} />
+        <LineChart aqi_data={aqiData}/>
+        {cleanestCities !==null ?<BarChart aqi_data={cleanestCities}/>:<></>} 
+        {dirtiestCities !==null ?<BarChart aqi_data={dirtiestCities}/>:<></>} 
       </div>
     </>
   );

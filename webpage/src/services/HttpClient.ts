@@ -29,6 +29,32 @@ export interface SearchParams {
   max_hour?: number;
 }
 
+
+function pollutantURL(pt:PollutantType): string{
+
+  let url = "/pollutant";
+  switch (pt) {
+    case PollutantType.O3: {
+      url = url + "/o3";
+      break;
+    }
+    case PollutantType.SO2: {
+      url = url + "/no2";
+      break;
+    }
+
+    case PollutantType.NO2: {
+      url = url + "/no2";
+      break;
+    }
+    case PollutantType.CO: {
+      url = url + "/co";
+      break;
+    }
+  }
+  return url
+}
+
 export interface PollutantInfo {
   id: number;
   location: {
@@ -95,32 +121,57 @@ export class HttpClient {
     }
   }
 
+  
+  // Method to fetch timelines
+  public async get_pollutant_timeline(pollutant: PollutantType): Promise<any> {
+    let url = pollutantURL(pollutant)
+    url = url + "/timeline"
+
+    try {
+      const response: AxiosResponse = await this.client.get(url);
+      return response.data;
+    } catch (error) {
+      console.error("Error in get_cities:", error);
+      throw error;
+    }
+  }
+
+   // Method to fetch cleanest cities
+   public async get_pollutant_cleanest_cities(pollutant: PollutantType): Promise<any> {
+    let url = pollutantURL(pollutant)
+    url = url + "/top_cleanest_cities"
+
+    try {
+      const response: AxiosResponse = await this.client.get(url);
+      return response.data;
+    } catch (error) {
+      console.error("Error in get_cities:", error);
+      throw error;
+    }
+  }
+
+    // Method to fetch dirtiest cities
+    public async get_pollutant_dirtiest_cities(pollutant: PollutantType): Promise<any> {
+      let url = pollutantURL(pollutant)
+      url = url + "/top_dirtiest_cities"
+  
+      try {
+        const response: AxiosResponse = await this.client.get(url);
+        return response.data;
+      } catch (error) {
+        console.error("Error in get_cities:", error);
+        throw error;
+      }
+    }
+
+
+
   // Method to fetch pollutants information
   public async get_pollutants_info(
     searchParams: SearchParams,
     pollutant: PollutantType
   ): Promise<PollutantInfo[]> {
-    let url = "/pollutant";
-
-    switch (pollutant) {
-      case PollutantType.O3: {
-        url = url + "/o3";
-        break;
-      }
-      case PollutantType.SO2: {
-        url = url + "/no2";
-        break;
-      }
-
-      case PollutantType.NO2: {
-        url = url + "/no2";
-        break;
-      }
-      case PollutantType.CO: {
-        url = url + "/co";
-        break;
-      }
-    }
+    let url = pollutantURL(pollutant)
 
     try {
       const response: AxiosResponse = await this.client.get(url, {

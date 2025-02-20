@@ -121,7 +121,76 @@ class Pollutant(db.Model):
 
     @classmethod
     def get_pollutans(self, search_params: SearchParamns = None, pollutant_type = PollutantType):
-        query = self.query.join(Location)
+        
+        if(pollutant_type == PollutantType.O3):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.o3_aqi),
+                    Location.latitude,
+                    Location.longitude,
+                    Location.state,
+                    self.year,
+                    self.month,
+                    self.day
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.o3_aqi).asc())
+            )
+        
+        if(pollutant_type == PollutantType.CO):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.co_aqi),
+                    Location.latitude,
+                    Location.longitude,
+                    Location.state,
+                    self.year,
+                    self.month,
+                    self.day
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.co_aqi).asc())
+            )
+            
+        if(pollutant_type == PollutantType.SO2):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.so2_aqi),
+                    Location.latitude,
+                    Location.longitude,
+                    Location.state,
+                    self.year,
+                    self.month,
+                    self.day
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.so2_aqi).asc())
+            )
+        
+        if(pollutant_type == PollutantType.NO2):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.no2_aqi),
+                    Location.latitude,
+                    Location.longitude,
+                    Location.state,
+                    self.year,
+                    self.month,
+                    self.day
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.no2_aqi).asc())
+            )
+        
+        
 
         if search_params.state:
             query = query.filter(Location.state == search_params.state)
@@ -212,31 +281,149 @@ class Pollutant(db.Model):
 
     @classmethod
     def get_top_cleanest_cities(self, pollutant_type: PollutantType):
-        query = (
-            db.session.query(
-                Location.city,
-                func.avg(self.o3_aqi)
+        if(pollutant_type == PollutantType.O3):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.o3_aqi)
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.o3_aqi).asc())
+                .limit(10)
             )
-            .join(self, self.location_id == Location.id)
-            .group_by(Location.city)
-            .order_by(func.avg(self.o3_aqi).asc())
-            .limit(10)
-        )
+        
+        if(pollutant_type == PollutantType.CO):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.co_aqi)
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.co_aqi).asc())
+                .limit(10)
+            )
+            
+        if(pollutant_type == PollutantType.SO2):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.so2_aqi)
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.so2_aqi).asc())
+                .limit(10)
+            )
+        
+        if(pollutant_type == PollutantType.NO2):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.no2_aqi)
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.no2_aqi).asc())
+                .limit(10)
+            )
 
         return query.all()
     
     @classmethod
     def get_top_dirtiest_cities(self, pollutant_type: PollutantType):
-        query = (
-            db.session.query(
-                Location.city,
-                func.avg(self.o3_aqi)
+        if(pollutant_type == PollutantType.O3):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.o3_aqi)
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.o3_aqi).desc())
+                .limit(10)
             )
-            .join(self, self.location_id == Location.id)
-            .group_by(Location.city)
-            .order_by(func.avg(self.o3_aqi).desc())
-            .limit(10)
-        )
+        
+        if(pollutant_type == PollutantType.CO):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.co_aqi)
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.co_aqi).desc())
+                .limit(10)
+            )
+
+        if(pollutant_type == PollutantType.SO2):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.so2_aqi)
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.so2_aqi).desc())
+                .limit(10)
+            )
+        
+        if(pollutant_type == PollutantType.NO2):
+            query = (
+                db.session.query(
+                    Location.city,
+                    func.avg(self.no2_aqi)
+                )
+                .join(self, self.location_id == Location.id)
+                .group_by(Location.city)
+                .order_by(func.avg(self.no2_aqi).desc())
+                .limit(10)
+            )
+
+        return query.all()
+    
+    @classmethod
+    def get_timeline(self, pollutant_type: PollutantType):
+        if(pollutant_type == PollutantType.O3):
+            query = (
+                db.session.query(
+                    self.year,
+                    func.avg(self.o3_aqi)
+                )
+                .group_by(self.year)
+                .order_by(self.year.asc())
+            )
+        
+        if(pollutant_type == PollutantType.CO):
+           query = (
+                db.session.query(
+                    self.year,
+                    func.avg(self.co_aqi)
+                )
+                .group_by(self.year)
+                .order_by(self.year.asc())
+            )
+
+        if(pollutant_type == PollutantType.SO2):
+            query = (
+                db.session.query(
+                    self.year,
+                    func.avg(self.so2_aqi)
+                )
+                .group_by(self.year)
+                .order_by(self.year.asc())
+            )
+        
+        if(pollutant_type == PollutantType.NO2):
+            query = (
+                db.session.query(
+                    self.year,
+                    func.avg(self.no2_aqi)
+                )
+                .group_by(self.year)
+                .order_by(self.year.asc())
+            )
 
         return query.all()
 

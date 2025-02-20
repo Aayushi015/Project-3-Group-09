@@ -23,7 +23,7 @@ const HeatmapLayer = ({ points }: { points: [number, number, number][] }) => {
     const heatLayer = (L as any).heatLayer(points, {
       radius: 20,
       blur: 7,
-      maxZoom: 14,
+      maxZoom: 7,
       max: 300.0,
       gradient: gradient,
     });
@@ -32,7 +32,6 @@ const HeatmapLayer = ({ points }: { points: [number, number, number][] }) => {
 
     const handleZoomEnd = () => {
       const zoom = map.getZoom();
-      console.log(zoom);
       setCurrentZoom(zoom);
     };
 
@@ -53,13 +52,22 @@ interface Props {
 }
 
 const Heatmap = (props: Props) => {
+
+  const bounds = [
+    [24.396308, -125.0], // Southwest coordinates
+    [49.384358, -66.93457], // Northeast coordinates
+  ];
+
   return (
     <div className="w-full h-screen">
       <MapContainer
         center={[39.8283, -98.5795]} // USA Center
         zoom={4}
+        // @ts-ignore
+        maxBounds={bounds}
         zoomControl={false}
-        maxZoom={6}
+        minZoom={4}
+        maxZoom={7}
         className="w-full h-110 rounded-lg shadow-lg"
       >
         <TileLayer

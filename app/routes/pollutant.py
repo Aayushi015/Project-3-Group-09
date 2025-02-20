@@ -45,15 +45,12 @@ def get_pollutans(pollutant_type):
     fields = POLLUTANT_FIELDS[pollutant_type]
     return jsonify([
         {
-            "id": pollutant.id,
-            "location": pollutant.location.to_dict(),
-            "aqi": getattr(pollutant, fields[0]),
-            "mean": getattr(pollutant, fields[1]),
-            "first_max_hour": getattr(pollutant, fields[2]),
-            "max_value": getattr(pollutant, fields[3]),
-            "year": pollutant.year,
-            "month": pollutant.month,
-            "day": pollutant.day
+            "location": {
+                "city":pollutant[0],
+                "latitude": pollutant[2],
+                "longitude": pollutant[3]
+            },
+            "aqi": pollutant[1],
         }
         for pollutant in pollutants
     ])
@@ -112,6 +109,35 @@ def get_top_dirtiest_cities(pollutant_type):
     return jsonify([
         {
             "city": pollutant[0],
+            "avg_aqi": pollutant[1],
+        }
+        for pollutant in pollutants
+    ])
+
+@pollutant_bp.route('/pollutant/<string:pollutant_type>/timeline')
+def get_timeline(pollutant_type):
+
+    match pollutant_type:
+        case 'o3':
+            pollutant_type = PollutantType.O3
+        
+        case 'so2':
+            pollutant_type = PollutantType.SO2
+        
+        case 'co':
+            pollutant_type = PollutantType.CO
+
+        case 'no2':
+            pollutant_type = PollutantType.NO2
+
+        case _:
+            return jsonify({"error": "That pollutant is not supported in this API"}), 400
+
+    pollutants: List[Pollutant] = Pollutant.get_timeline(pollutant_type)
+
+    return jsonify([
+        {
+            "year": pollutant[0],
             "avg_aqi": pollutant[1],
         }
         for pollutant in pollutants
