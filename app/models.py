@@ -3,6 +3,8 @@ from sqlalchemy import Integer, Float, String, ForeignKey, Column, func
 from sqlalchemy.orm import relationship
 from enum import Enum
 from database import db
+from time import sleep
+import os
 
 class PollutantType(Enum):
     O3 = "Ozone"
@@ -53,6 +55,12 @@ class Location(db.Model):
 
     @classmethod
     def get_states(self):
+        # print("="*80)
+        # print("MODELS LINE 57")
+        # print(os.getcwd())
+        # print("="*80)
+        # sleep(30)
+        # print("="*80)
 
         locations = self.query.all()
 

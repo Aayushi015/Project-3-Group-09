@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
-const API_BASE_URL = "http://localhost:5000/api";
+export const API_BASE_URL = "https://leonardojrr.pythonanywhere.com/api";
 
 export enum PollutantType {
   O3,
