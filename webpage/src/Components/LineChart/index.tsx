@@ -87,12 +87,10 @@ const AvgAQILineChart = ({aqi_data}:Props) => {
   };
 
   return (
-    <div className="flex justify-center p-4 bg-gray-100 rounded-lg">
-      <div className="w-full max-w-xl bg-white p-4 shadow-md rounded">
+      <div className="flex justify-center w-full max-w-xl bg-white p-4 shadow-md rounded">
         {/* @ts-ignore */}
         <Line data={chartData} options={chartOptions} />
       </div>
-    </div>
   );
 };
 

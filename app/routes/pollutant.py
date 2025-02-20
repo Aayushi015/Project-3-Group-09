@@ -42,7 +42,6 @@ def get_pollutans(pollutant_type):
     search_params = SearchParamns(state, county, city, latitude, longitude, year, month, day, aqi, mean, max_value, max_hour)
     pollutants: List[Pollutant] = Pollutant.get_pollutans(search_params, pollutant_type)
 
-    fields = POLLUTANT_FIELDS[pollutant_type]
     return jsonify([
         {
             "location": {

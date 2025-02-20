@@ -39,7 +39,7 @@ function pollutantURL(pt:PollutantType): string{
       break;
     }
     case PollutantType.SO2: {
-      url = url + "/no2";
+      url = url + "/so2";
       break;
     }
 
