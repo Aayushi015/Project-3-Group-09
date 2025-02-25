@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from database import db, bind_database
+from database import bind_database
 
 #Routes
 from routes.pollutant import pollutant_bp
@@ -10,7 +10,7 @@ from routes.cities import cities_bp
 
 
 app = Flask(__name__)
-CORS(app, origins=['http://localhost:5173'])
+CORS(app)
 
 bind_database(app)
 

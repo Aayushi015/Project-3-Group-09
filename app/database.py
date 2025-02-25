@@ -1,9 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
 import os
 
 # Set SQLite database path
-DATABASE_PATH = os.path.abspath("../data1/usa_pollution.db")
+DATABASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "usa_pollution.db"))
 db = SQLAlchemy() 
 
 def bind_database(app):
