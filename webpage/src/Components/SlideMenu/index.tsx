@@ -34,7 +34,6 @@ const SlideMenu = () => {
         </button>
 
         <ul className="space-y-2 mt-12">
-          <li>
             <NavLink
               to="/"
               className={({ isActive }) =>
@@ -123,6 +122,17 @@ const SlideMenu = () => {
             </li>
 
             <NavLink
+              to="/source"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "bg-slate-400 text-gray-50" : "text-slate-500"
+                } block m-1 p-2  rounded hover:bg-slate-400  hover:text-gray-50 font-bold`
+              }
+            >
+              References
+            </NavLink>
+
+            <NavLink
               to="/about"
               className={({ isActive }) =>
                 `${
@@ -132,7 +142,6 @@ const SlideMenu = () => {
             >
               About Us
             </NavLink>
-          </li>
         </ul>
       </div>
     </>

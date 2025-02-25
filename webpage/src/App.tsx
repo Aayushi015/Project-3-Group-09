@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Pollutants, Home, About } from "./Pages";
+import { Pollutants, Home, About,Source} from "./Pages";
 import { Route, Routes } from "react-router-dom";
 import SlideMenu from "./Components/SlideMenu";
 
@@ -10,6 +9,7 @@ export default function LandingPage() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/pollutants/*" element={<Pollutants />} />
+          <Route path="/source" element={<Source />} />
           <Route path="/about" element={<About />} />
         </Routes>
       </div>

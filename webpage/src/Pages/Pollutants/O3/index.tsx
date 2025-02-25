@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import Heatmap from "../../../Components/HeatMap";
+import LineChart from "../../../Components/LineChart";
+import BarChart from "../../../Components/BarChart";
+
 import { PollutantProps } from "../index";
 import {
   HttpClient,
@@ -8,18 +11,50 @@ import {
   PollutantInfo,
 } from "../../../services/HttpClient";
 
+const displayRecordTable =(pollutantHeatData:any)=>{return (<>
+  <h2 className="text-2xl font-semibold text-3xl text-gray-800 mb-7 mt-7 text-center">
+  Example of O3 heat Record 
+  </h2>
+  <div className="max-h-80 overflow-y-auto rounded-lg shadow-lg border border-gray-200">
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">City</th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Latitude</th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Longitude</th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">AQI</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {/* @ts-ignore */}
+          {pollutantHeatData.map((item, index) => (
+            <tr key={index} className="hover:bg-gray-50 transition-colors">
+              <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">{item.location.city}</td>
+              <td className="px-4 py-3 text-sm text-gray-700">{item.location.latitude.toFixed(4)}</td>
+              <td className="px-4 py-3 text-sm text-gray-700">{item.location.longitude.toFixed(4)}</td>
+              <td className="px-4 py-3 text-sm text-gray-700">{item.aqi.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+</>
+)}
+
 const O3 = (Props: PollutantProps) => {
-  let [pollutantHeatData, setPollutantHeatData] = useState<
-    [number, number, number][]
-  >([]);
+  let [pollutantHeatData, setPollutantHeatData] = useState<any>(null);
+  let [aqiData,setAqiData] = useState<any>([]);
+  let [cleanestCities,setCleanestCities] = useState<any>(null);
+  let [dirtiestCities,setDirtiestCities] = useState<any>(null);
+  let [displayData, setDisplayData] = useState<any>(null);
+
+
 
   const [selectedYear, setSelectedYear] = useState<number>(2000);
   const [selectedMonth, setSelectedMonth] = useState<number>(0);
   const [selectedState, setSelectedState] = useState<string>("");
 
-  // Generate an array of years from 2000 to 2023
-  const years = Array.from({ length: 24 }, (_, index) => 2000 + index);
-  const months = Array.from({ length: 12 }, (_, index) => 1 + index);
+ 
 
   // Handle year selection
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -34,24 +69,7 @@ const O3 = (Props: PollutantProps) => {
     setSelectedState(String(event.target.value));
   };
 
-  const mapMonth = (index: number): String => {
-    let months_names = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    return months_names[index - 1];
-  };
+ 
 
   useEffect(() => {
     let client = new HttpClient();
@@ -64,7 +82,8 @@ const O3 = (Props: PollutantProps) => {
 
     client.get_pollutants_info(search, PollutantType.O3).then((data) => {
       let heatdata: [number, number, number][] = [];
-      console.log(data);
+      let displayRecords: PollutantInfo[] = []
+
       data.map((p) => {
         let point: [number, number, number] = [
           p.location.latitude,
@@ -73,11 +92,30 @@ const O3 = (Props: PollutantProps) => {
         ];
 
         heatdata.push(point);
+
+        displayRecords.push(p)
       });
 
       setPollutantHeatData(heatdata);
+      setDisplayData(displayRecords)
     });
   }, [selectedYear, selectedMonth, selectedState]);
+
+  useEffect(() => {
+    let client = new HttpClient();
+
+    client.get_pollutant_timeline(PollutantType.O3).then((data) => {
+      setAqiData(data)
+    });
+
+    client.get_pollutant_cleanest_cities(PollutantType.O3).then((data) => {
+      setCleanestCities(data)
+    });
+
+    client.get_pollutant_dirtiest_cities(PollutantType.O3).then((data) => {
+      setDirtiestCities(data)
+    });
+  }, []);
 
   return (
     <>
@@ -168,53 +206,28 @@ const O3 = (Props: PollutantProps) => {
           </ul>
         </section>
 
-        <div className="relative inline-block text-left">
-          <select
-            value={selectedYear ?? ""}
-            onChange={handleYearChange}
-            className="block w-full px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="" disabled>
-              Select a Year
-            </option>
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
+        <section className="flex flex-col items-center justify-center text-lg text-gray-600 max-w-4xl mb-10">
+          <h2 className="text-2xl font-semibold text-3xl text-gray-800 mb-7 mt-7 text-center">
+            Average O3 AQI in USA
+          </h2>
+          {pollutantHeatData !==null ? <Heatmap states={Props.states} selectedState={selectedState} selectedMonth={selectedMonth} selectedYear={selectedYear} handleYearChange={handleYearChange} handleStateChange={handleStateChange} handleMonthChange={handleMonthChange} points={pollutantHeatData} />:<></>}
+          <h2 className="text-2xl font-semibold text-3xl text-gray-800 mb-7 mt-10 text-center">
+            Average O3 AQI Timeline
+          </h2>
+          <LineChart aqi_data={aqiData}/>
+        </section>
 
-        <div className="relative inline-block text-left">
-          <select
-            value={selectedMonth ?? ""}
-            onChange={handleMonthChange}
-            className="block w-full px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">Disable</option>
-            {months.map((month) => (
-              <option key={month} value={month}>
-                {mapMonth(month)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="relative inline-block text-left">
-          <select
-            value={selectedState ?? ""}
-            onChange={handleStateChange}
-            className="block w-full px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">Disable</option>
-            {Props.states.map((state: any) => (
-              <option key={state.id} value={state.state}>
-                {state.state}
-              </option>
-            ))}
-          </select>
-        </div>
-        <Heatmap points={pollutantHeatData} />
+        <section className="flex flex-col items-center justify-center text-lg text-gray-600 max-w-4xl mb-10">
+          <h2 className="text-2xl font-semibold text-3xl text-gray-800 mb-7 mt-7 text-center">
+            Cities with the Best O3 AQI
+          </h2>
+        {cleanestCities !==null ?<BarChart aqi_data={cleanestCities}/>:<></>} 
+          <h2 className="text-2xl font-semibold text-3xl text-gray-800 mb-7 mt-10 text-center">
+          Cities with the Worst O3 AQI
+          </h2>
+        {dirtiestCities !==null ?<BarChart aqi_data={dirtiestCities}/>:<></>} 
+        </section>
+        {displayData !==null ?displayRecordTable(displayData) : <></>}     
       </div>
     </>
   );
