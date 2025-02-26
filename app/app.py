@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from database import bind_database
 
 #Routes
@@ -9,6 +10,7 @@ from routes.cities import cities_bp
 
 
 app = Flask(__name__)
+CORS(app)
 
 bind_database(app)
 
